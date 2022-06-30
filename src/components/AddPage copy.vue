@@ -79,7 +79,6 @@
                     :content="deleteContent"
                 />
                 <ModalGroupEdit ref="modalGroupEdit" :content="editContent" />
-                <ModalCalAdd ref="modalCalAdd" :content="calAddContent" />
             </div>
             <div class="groupBox">
                 <GroupView
@@ -87,7 +86,6 @@
                     :childGroup="state.group"
                     :parentNames="''"
                     @showGroupModal="showGroupModal"
-                    @showCalModal="showCalModal"
                 ></GroupView>
             </div>
         </div>
@@ -99,17 +97,10 @@ import { reactive, ref } from "vue";
 import ModalGroupAdd from "../teleport/ModalGroupAdd.vue";
 import ModalGroupDelete from "../teleport/ModalGroupDelete.vue";
 import ModalGroupEdit from "../teleport/ModalGroupEdit.vue";
-import ModalCalAdd from "../teleport/ModalCalAdd.vue";
 import GroupView from "./GroupView.vue";
 export default {
     name: "AddPage",
-    components: {
-        GroupView,
-        ModalGroupAdd,
-        ModalGroupDelete,
-        ModalGroupEdit,
-        ModalCalAdd,
-    },
+    components: { ModalGroupAdd, ModalGroupDelete, ModalGroupEdit, GroupView },
     setup() {
         const modalGroupAdd = ref();
         const addContent = ref("");
@@ -119,9 +110,6 @@ export default {
 
         const modalGroupEdit = ref();
         const editContent = ref("");
-
-        const modalCalAdd = ref();
-        const calAddContent = ref("");
 
         const txt = reactive({
             leader: "",
@@ -169,10 +157,10 @@ export default {
 
             if (target === null) {
                 // rootGroup Add
-                state.group.push({ name: ok, sub: [], cal: [] });
+                state.group.push({ name: ok, sub: [] });
             } else {
                 // subGroup Add
-                target.sub.push({ name: ok, sub: [], cal: [] });
+                target.sub.push({ name: ok, sub: [] });
             }
         };
 
@@ -227,68 +215,6 @@ export default {
             }
         };
 
-        const calAdd = async (target = null) => {
-            // 루트, 서브그룹 추가 모달
-            const ok = await modalCalAdd.value.show();
-            if (!ok) {
-                // cancle
-                return;
-            }
-
-            if (target === null) {
-                // rootGroup Calendar Add
-                state.group.cal.push({ name: ok.name, date: ok.date });
-            } else {
-                // subGroup Calendar Add
-                target.cal.push({ name: ok.name, date: ok.date });
-            }
-        };
-
-        const calDelete = (target = null, index = null) => {
-            if (target === null) {
-                // rootGroup Calendar Add
-                state.group.cal.push({ name: ok.name, date: ok.date });
-            } else {
-                // subGroup Calendar Add
-                target.cal.push({ name: ok.name, date: ok.date });
-            }
-        };
-
-        const showCalModal = ({ type, target = null, index = null }) => {
-            if (type == "add") {
-                calAddContent.value = target.name;
-                calAdd(target);
-            }
-            // if (type == "add") {
-            //     // 루트, 서브 그룹추가 모달 show
-            //     addContent.value =
-            //         target === null
-            //             ? "그룹 추가"
-            //             : `${target.name}의 서브그룹 추가`;
-            //     groupAdd(target);
-            // } else if (type == "delete") {
-            //     // 루트, 서브 그룹삭제 모달 show
-            //     if (target.sub) {
-            //         deleteContent.value = target.sub[index].name;
-            //         target = target.sub;
-            //     } else {
-            //         deleteContent.value = target[index].name;
-            //     }
-
-            //     groupDelete(target, index);
-            // } else if (type == "edit") {
-            //     // 루트, 서브 그룹수정 모달 show
-            //     if (target.sub) {
-            //         editContent.value = target.sub[index].name;
-            //         target = target.sub;
-            //     } else {
-            //         editContent.value = target[index].name;
-            //     }
-
-            //     groupEdit(target, index);
-            // }
-        };
-
         return {
             modalGroupAdd,
             addContent,
@@ -296,18 +222,14 @@ export default {
             deleteContent,
             modalGroupEdit,
             editContent,
-            modalCalAdd,
-            calAddContent,
+            groupAdd,
+            groupDelete,
+            groupEdit,
             txt,
             state,
             addMember,
             delMember,
-            groupAdd,
-            groupDelete,
-            groupEdit,
-            calAdd,
             showGroupModal,
-            showCalModal,
         };
     },
 };
